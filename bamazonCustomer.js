@@ -3,6 +3,10 @@ var mySQL = require('mySQL');
 var inquirer = require('inquirer');
 var colors = require('colors');
 
+// Global variables
+var div = '\n--------------------------------------------------------------------\n';
+var divSml = '-------------------------------------------------------------------'
+
 // mySQL object
 var connection = mySQL.createConnection({
   host: 'localhost',
@@ -30,14 +34,29 @@ function showProducts() {
   connection.query('SELECT * FROM wares', function (err, res) {
     if (err) throw err;
     var results = res;
+    console.log('Welcome to IllWill, purveyor of used, cursed, and otherwise undesireable magic items.'.yellow.inverse.bold);
+    console.log('Below you will find a list of our current offers, and their price. Please note the price is NOT negotiable. '.yellow.inverse.bold);
+    console.log('-----------------------------------------------------------------------------------------------------------.'.yellow.inverse.bold);
+    console.log('\nOur current wares:'.yellow.inverse.bold);
 
+    // loop through results
     for (let i = 0; i < results.length; i++) {
       const element = results[i];
-      console.log(results[i].product_name);
-      console.log(results[i].department_name);
-      console.log(results[i].price);
-      console.log(results[i].stock_quantity);
-    }
+      console.log(colors.white(divSml));
+      console.log(colors.yellow.bold('Item ' + results[i].id + ' : ' + results[i].product_name));
+      console.log(colors.white('Category: ' + results[i].department_name));
+      console.log(colors.white('Price: ' + results[i].price));
+      console.log(colors.white('Stock: ' + results[i].stock_quantity));
+      console.log(colors.white(divSml));
+    };
+
+    inquirer.prompt([
+      {
+        type: 'input',
+        message: 'What item would you like to buy?'.yellow.inverse,
+        name: 'choice',
+      }
+    ])
 
   })
   connection.end();
