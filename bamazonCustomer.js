@@ -29,9 +29,18 @@ connection.connect(function (err) {
 function showProducts() {
   connection.query('SELECT * FROM wares', function (err, res) {
     if (err) throw err;
-    console.log(res);
-  })
+    var results = res;
 
+    for (let i = 0; i < results.length; i++) {
+      const element = results[i];
+      console.log(results[i].product_name);
+      console.log(results[i].department_name);
+      console.log(results[i].price);
+      console.log(results[i].stock_quantity);
+    }
+
+  })
+  connection.end();
 }
 
 
