@@ -49,17 +49,43 @@ function showProducts() {
       console.log(colors.white('Stock: ' + results[i].stock_quantity));
       console.log(colors.white(divSml));
     };
-
-    inquirer.prompt([
-      {
-        type: 'input',
-        message: 'What item would you like to buy?'.yellow.inverse,
-        name: 'choice',
-      }
-    ])
-
   })
   connection.end();
 }
 
+function getSelection() {
+  // Promopt user to select an item to purchase.
+  inquirer.prompt([
+    {
+      type: 'input',
+      message: 'Please enter the id number of the item you would like to buy.'.yellow.inverse,
+      name: 'selection',
+    }
 
+  ])
+
+};
+
+
+
+// BEGIN PSUDEO FOR NEXT FUNCTION
+// It will use inquirer to prompt input. 
+// The prompt will be named SELECTION, to be called later in InquirerResponse.selection
+
+// .then use a function that takes the inquirer.response and runs an evaluation function on it
+// function evaluateResposne (inquirerResponse.selection) { log the specific item}
+// This will then log the specific item again, and prompt another inquirer
+
+// This inquirer will ask the customer how many they would like to purchase
+// prompt will be named quantity
+// call stockcheck function with inquirer.quantity to query the database to make sure that the quantity is acceptable
+
+// function stockCheck(id, quantity) { query SELECT item FROM wares WHERE id = product_id }
+// if stock < quantity, error
+// otherwise, total up
+// 
+
+// That evaluation function will contain the logic needed to select the item, then ask the customer for a quantity
+// Once a quantity has been entered, there must be a error catch if the customer has ordered more than stock allows
+// Then, move into totaling price * quantity, and displaying the total to the customer.
+// Then, deduct stock from the store's inventory
