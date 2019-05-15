@@ -34,6 +34,7 @@ connection.connect(function (err) {
 
 function mainFunction() {
   taskQuery();
+
 };
 
 function taskQuery() {
@@ -59,10 +60,60 @@ function taskQuery() {
         case 'View Low Inventory':
           lowQuery();
           break;
+
+        case 'Add to Inventory':
+          stockUp();
+          break;
       }
-      connection.end();
+
     })
 }
+function stockUp() {
+  connection.query('SELECT * FROM wares', function (err, res) {
+    if (err) throw err;
+    var results = res;
+    console.log(results);
+
+    console.log('\nOur current items:'.yellow.inverse.bold);
+
+    // loop through results
+    for (let i = 0; i < results.length; i++) {
+      console.log(colors.white(divSml));
+      console.log(colors.yellow.bold('Item ' + results[i].id + ' : ' + results[i].product_name + ' -- Stock: ' + results[i].stock_quantity));
+      console.log(colors.white(divSml));
+    };
+    stockQuery();
+    function stockQuery() {
+      inquirer.prompt([
+        {
+          type: 'input',
+          message: 'Please enter the id number of the item you would like to restock.'.yellow.inverse,
+          name: 'selection',
+        },
+        {
+          type: 'input',
+          message: '\nHow many shall we procure?'.yellow.inverse,
+          name: 'quantity',
+        }
+
+        // Need to redisplay selection in orrder to grab stock quantity easily, grab same idea from purchasing app
+
+
+
+      ]).then(function (inquirerResponse) {
+        var updatedStock = results.stock_quantity + inquirerResponse.quantity;
+        connection.query('UPDATE wares SET ? WHERE ?', [{ stock_quantity: updatedStock }, { id: inquirerResponse.selection }],
+          function (err, res) {
+            if (err) throw err;
+            console.log(colors.yellow.inverse.bold('We will procure ' + res.affectedRows + ' of those peculiar ' + result.product_name + '(s)\n'));
+            console.log(colors.yellow.inverse.bold('We thank you for your input, oh Ancient One...'));
+          }
+        )
+      });
+    }
+  })
+};
+
 
 function lowQuery() {
   connection.query('SELECT * FROM wares', function (err, res) {
