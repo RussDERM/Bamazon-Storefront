@@ -128,7 +128,7 @@ function itemQuery() {
               connection.query('UPDATE wares SET ? WHERE ?', [{ stock_quantity: stockleft }, { id: inquirerResponse.selection }],
                 function (err, res) {
                   if (err) throw err;
-                  console.log(colors.yellow.inverse.bold('Our store now has ' + res.affectedRows + ' of those peculiar ' + result.product_name + '(s) left!\n'));
+                  console.log(colors.yellow.inverse.bold('Our store now has ' + stockleft + ' of those peculiar ' + result.product_name + '(s) left!\n'));
                   console.log(colors.yellow.inverse.bold('We sure do appreciate the buisness...'));
 
                   connection.end();
