@@ -55,8 +55,30 @@ function taskQuery() {
         case 'View Inventory':
           waresQuery();
           break;
+
+        case 'View Low Inventory':
+          lowQuery();
+          break;
       }
+      connection.end();
     })
+}
+
+function lowQuery() {
+  connection.query('SELECT * FROM wares', function (err, res) {
+    if (err) throw err;
+    var results = res;
+    for (let i = 0; i < results.length; i++) {
+      if (results[i].stock_quantity < 5) {
+        console.log(colors.white(divSml));
+        console.log(colors.yellow.bold('Item ' + results[i].id + ' : ' + results[i].product_name));
+        console.log(colors.white('Category: ' + results[i].department_name));
+        console.log(colors.white('Price: ' + results[i].price));
+        console.log(colors.white('Stock: ' + results[i].stock_quantity));
+        console.log(colors.white(divSml));
+      }
+    };
+  });
 }
 
 function waresQuery() {
