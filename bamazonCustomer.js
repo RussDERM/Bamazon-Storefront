@@ -2,6 +2,8 @@
 var mySQL = require('mySQL');
 var inquirer = require('inquirer');
 var colors = require('colors');
+var strikes;
+
 
 // Global variables
 var div = '\n--------------------------------------------------------------------\n';
@@ -53,21 +55,76 @@ function waresQuery() {
       console.log(colors.white('Stock: ' + results[i].stock_quantity));
       console.log(colors.white(divSml));
     };
+    itemQuery();
   })
+}
+
+
+
+function itemQuery() {
+  // Ask the customer what item they are interested in
   inquirer.prompt([
     {
       type: 'input',
       message: 'Please enter the id number of the item you would like to buy.'.yellow.inverse,
       name: 'selection',
-      // we then want to redisplay the item, in order to see the available quantity easily
-    }]).then(function (inquirerResponse) {
+
+    }])
+
+    // we then want to redisplay the item, in order to see the available quantity easily,
+    // then prompt them for how much they would like to purchase
+
+    .then(function (inquirerResponse) {
       connection.query('SELECT * FROM wares WHERE ?', { id: inquirerResponse.selection }, function (err, res) {
         if (err) throw err;
-        console.log(res);
-        connection.end();
+        var result = res[0];
+        // log item again
+        console.log(divSml);
+        console.log('You have selected:');
+        console.log(colors.white(divSml));
+        console.log(colors.yellow.bold('Item ' + result.id + ' : ' + result.product_name));
+        console.log(colors.white('Category: ' + result.department_name));
+        console.log(colors.white('Price: ' + result.price));
+        console.log(colors.white('Stock: ' + result.stock_quantity));
+        console.log(colors.white(divSml));
+
+        // prompt for quantitiy
+        inquirer.prompt([
+          {
+            type: 'input',
+            message: 'How many would you like?'.yellow.inverse,
+            name: 'quantity',
+          }])
+          .then(function (inquirerResponse) {
+            // if statement to check current stock.
+            // using already delivered quantity
+            // check if it is greater
+            // if so, re-display original quality, and insult the customer's intelligence
+            // ICEBOX, increment a variable of wrong attempts, and if it reaches two, end the connection.
+            if (inquirerResponse.quantity > result.stock_quantity) {
+              console.log(colors.red.inverse.bold('-------------------------------------------------------------------------------'));
+              console.log(colors.red.inverse.bold('Pardon me, but I do not have enough of those                                   '));
+              console.log(colors.red.inverse.bold('Please do not make this mistake again, I do not have the patience for mistakes.'));
+              console.log(colors.red.inverse.bold('-------------------------------------------------------------------------------'));
+            }
+            // else log the request
+            console.log(divSml);
+            console.log(colors.red.inverse('Your Selection is:'));
+            console.log(colors.white(divSml));
+            console.log(colors.red.bold('Item ' + result.id + ' : ' + result.product_name));
+            console.log(colors.red('Quantity: ' + inquirerResponse.quantity));
+            console.log(colors.red('Total: ' + result.price * inquirerResponse.quantity));
+            console.log(colors.white(divSml));
+            // update the store stock
+            updateStock();
+          });
+
       })
     })
+
 }
+
+
 
 
 
