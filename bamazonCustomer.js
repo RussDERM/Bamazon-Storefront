@@ -1,3 +1,6 @@
+// OFFICE HOUR QUESTIONS
+// HOW DO I GET THE INQUIRER TO ASK THE SAME QUESTION AGAIN IF IT FAILS?
+
 // Require all node packages
 var mySQL = require('mySQL');
 var inquirer = require('inquirer');
@@ -106,6 +109,8 @@ function itemQuery() {
               console.log(colors.red.inverse.bold('Pardon me, but I do not have enough of those                                   '));
               console.log(colors.red.inverse.bold('Please do not make this mistake again, I do not have the patience for mistakes.'));
               console.log(colors.red.inverse.bold('-------------------------------------------------------------------------------'));
+              connection.end();
+              return;
             }
             // else log the request
             console.log(divSml);
@@ -117,6 +122,17 @@ function itemQuery() {
             console.log(colors.white(divSml));
             // update the store stock
             updateStock();
+            function updateStock() {
+              var stockleft = result.stock_quantity - inquirerResponse.quantity;
+
+              connection.query('UPDATE wares SET ? WHERE ?', [{ stock_quantity: stockleft }, { id: inquirerResponse.selection }],
+                function (err, res) {
+                  console.log(colors.yellow.inverse.bold('Our store now has ' + res.affectedRows + ' of those peculiar ' + result.product_name + '(s) left!\n'));
+                  console.log(colors.yellow.inverse.bold('We sure do appreciate the buisness...'));
+
+                  connection.end();
+                });
+            };
           });
 
       })
