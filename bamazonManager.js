@@ -33,9 +33,31 @@ connection.connect(function (err) {
 // SELECT * FROM wares, then log the result appealingly.
 
 function mainFunction() {
-  waresQuery();
+  taskQuery();
 };
 
+function taskQuery() {
+  inquirer.prompt([
+    {
+      type: 'list',
+      message: 'Hello there, oh Ancient One. What would you like to do?'.yellow.inverse,
+      choices: [
+        'View Inventory',
+        'View Low Inventory',
+        'Add to Inventory',
+        'Add New Product',
+        'Ascend, once again, into your higher realm'
+      ],
+      name: 'task',
+    }])
+    .then(function (answer) {
+      switch (answer.task) {
+        case 'View Inventory':
+          waresQuery();
+          break;
+      }
+    })
+}
 
 function waresQuery() {
   connection.query('SELECT * FROM wares', function (err, res) {
@@ -55,6 +77,5 @@ function waresQuery() {
       console.log(colors.white('Stock: ' + results[i].stock_quantity));
       console.log(colors.white(divSml));
     };
-    connection.end();
   })
 }
