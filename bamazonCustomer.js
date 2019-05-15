@@ -20,7 +20,7 @@ var connection = mySQL.createConnection({
 connection.connect(function (err) {
   if (err) throw err;
   console.log('You are connected as id ' + connection.threadId + '\n');
-  showProducts();
+  mainFunction();
 });
 
 
@@ -30,7 +30,12 @@ connection.connect(function (err) {
 // First build out, function to initialize the app, and display the contents of the store
 // SELECT * FROM wares, then log the result appealingly.
 
-function showProducts() {
+function mainFunction() {
+  waresQuery();
+};
+
+
+function waresQuery() {
   connection.query('SELECT * FROM wares', function (err, res) {
     if (err) throw err;
     var results = res;
@@ -41,7 +46,6 @@ function showProducts() {
 
     // loop through results
     for (let i = 0; i < results.length; i++) {
-      const element = results[i];
       console.log(colors.white(divSml));
       console.log(colors.yellow.bold('Item ' + results[i].id + ' : ' + results[i].product_name));
       console.log(colors.white('Category: ' + results[i].department_name));
@@ -50,21 +54,31 @@ function showProducts() {
       console.log(colors.white(divSml));
     };
   })
-  connection.end();
-}
-
-function getSelection() {
-  // Promopt user to select an item to purchase.
   inquirer.prompt([
     {
       type: 'input',
       message: 'Please enter the id number of the item you would like to buy.'.yellow.inverse,
       name: 'selection',
-    }
+      // we then want to redisplay the item, in order to see the available quantity easily
+    }]).then(function (inquirerResponse) {
+      connection.query('SELECT * FROM wares WHERE ?', { id: inquirerResponse.selection }, function (err, res) {
+        if (err) throw err;
+        console.log(res);
+        connection.end();
+      })
+    })
+}
 
-  ])
 
-};
+
+
+
+
+
+
+
+
+
 
 
 
