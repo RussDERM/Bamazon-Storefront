@@ -90,65 +90,82 @@ function stockUp() {
           message: 'Please enter the id number of the item you would like to restock.'.yellow.inverse,
           name: 'selection',
         },
-        {
-          type: 'input',
-          message: '\nHow many shall we procure?'.yellow.inverse,
-          name: 'quantity',
-        }
-
-        // Need to redisplay selection in orrder to grab stock quantity easily, grab same idea from purchasing app
-
-
-
       ]).then(function (inquirerResponse) {
-        var updatedStock = results.stock_quantity + inquirerResponse.quantity;
-        connection.query('UPDATE wares SET ? WHERE ?', [{ stock_quantity: updatedStock }, { id: inquirerResponse.selection }],
+        connection.query('SELECT * FROM wares WHERE ?', { id: inquirerResponse.selection },
           function (err, res) {
             if (err) throw err;
-            console.log(colors.yellow.inverse.bold('We will procure ' + res.affectedRows + ' of those peculiar ' + result.product_name + '(s)\n'));
-            console.log(colors.yellow.inverse.bold('We thank you for your input, oh Ancient One...'));
+            var result = res[0];
+            // log item once more
+            console.log(divSml);
+            console.log('The item you have selected to restock is:');
+            console.log(colors.white(divSml));
+            console.log(colors.yellow.bold('Item ' + result.id + ' : ' + result.product_name));
+            console.log(colors.white('Category: ' + result.department_name));
+            console.log(colors.white('Price: ' + result.price));
+            console.log(colors.white('Stock: ' + result.stock_quantity));
+            console.log(colors.white(divSml));
+
+            // prompt for quantitiy
+            inquirer.prompt([
+              {
+                type: 'input',
+                message: 'How many shall we purchase, '.yellow.inverse + 'Master?'.yellow.inverse.trap,
+                name: 'quantity',
+              }]).then(function (inquirerResponse) {
+                var updatedStock = result.stock_quantity + inquirerResponse.quantity;
+                console.log(updatedStock);
+                ;
+                // connection.query('UPDATE wares SET ? WHERE ?', [{ stock_quantity: }])
+
+
+              }
+              )
+          });
+      }
+      )
+    };
+
+    // var updatedStock = results.stock_quantity + inquirerResponse.quantity;
+    // connection.query('UPDATE wares SET ? WHERE ?', [{ stock_quantity: updatedStock }, { id: inquirerResponse.selection }],
+    //   function (err, res) {
+    //     if (err) throw err;
+    //     console.log(colors.yellow.inverse.bold('We will procure ' + res.affectedRows + ' of those peculiar ' + result.product_name + '(s)\n'));
+    //     console.log(colors.yellow.inverse.bold('We thank you for your input, oh Ancient One...'));
+
+    function lowQuery() {
+      connection.query('SELECT * FROM wares', function (err, res) {
+        if (err) throw err;
+        var results = res;
+        for (let i = 0; i < results.length; i++) {
+          if (results[i].stock_quantity < 5) {
+            console.log(colors.white(divSml));
+            console.log(colors.yellow.bold('Item ' + results[i].id + ' : ' + results[i].product_name));
+            console.log(colors.white('Category: ' + results[i].department_name));
+            console.log(colors.white('Price: ' + results[i].price));
+            console.log(colors.white('Stock: ' + results[i].stock_quantity));
+            console.log(colors.white(divSml));
           }
-        )
+        };
       });
     }
-  })
-};
 
+    function waresQuery() {
+      connection.query('SELECT * FROM wares', function (err, res) {
+        if (err) throw err;
+        var results = res;
+        console.log('Welcome to IllWill, purveyor of used, cursed, and otherwise undesireable magic items.'.yellow.inverse.bold);
+        console.log('Below you will find a list of our current offers, and their price. Please note the price is NOT negotiable. '.yellow.inverse.bold);
+        console.log('-----------------------------------------------------------------------------------------------------------.'.yellow.inverse.bold);
+        console.log('\nOur current wares:'.yellow.inverse.bold);
 
-function lowQuery() {
-  connection.query('SELECT * FROM wares', function (err, res) {
-    if (err) throw err;
-    var results = res;
-    for (let i = 0; i < results.length; i++) {
-      if (results[i].stock_quantity < 5) {
-        console.log(colors.white(divSml));
-        console.log(colors.yellow.bold('Item ' + results[i].id + ' : ' + results[i].product_name));
-        console.log(colors.white('Category: ' + results[i].department_name));
-        console.log(colors.white('Price: ' + results[i].price));
-        console.log(colors.white('Stock: ' + results[i].stock_quantity));
-        console.log(colors.white(divSml));
-      }
-    };
-  });
-}
-
-function waresQuery() {
-  connection.query('SELECT * FROM wares', function (err, res) {
-    if (err) throw err;
-    var results = res;
-    console.log('Welcome to IllWill, purveyor of used, cursed, and otherwise undesireable magic items.'.yellow.inverse.bold);
-    console.log('Below you will find a list of our current offers, and their price. Please note the price is NOT negotiable. '.yellow.inverse.bold);
-    console.log('-----------------------------------------------------------------------------------------------------------.'.yellow.inverse.bold);
-    console.log('\nOur current wares:'.yellow.inverse.bold);
-
-    // loop through results
-    for (let i = 0; i < results.length; i++) {
-      console.log(colors.white(divSml));
-      console.log(colors.yellow.bold('Item ' + results[i].id + ' : ' + results[i].product_name));
-      console.log(colors.white('Category: ' + results[i].department_name));
-      console.log(colors.white('Price: ' + results[i].price));
-      console.log(colors.white('Stock: ' + results[i].stock_quantity));
-      console.log(colors.white(divSml));
-    };
-  })
-}
+        // loop through results
+        for (let i = 0; i < results.length; i++) {
+          console.log(colors.white(divSml));
+          console.log(colors.yellow.bold('Item ' + results[i].id + ' : ' + results[i].product_name));
+          console.log(colors.white('Category: ' + results[i].department_name));
+          console.log(colors.white('Price: ' + results[i].price));
+          console.log(colors.white('Stock: ' + results[i].stock_quantity));
+          console.log(colors.white(divSml));
+        };
+      })
+    }
